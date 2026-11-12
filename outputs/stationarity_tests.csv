@@ -1,0 +1,5 @@
+series,ADF_stat,ADF_p,KPSS_stat,KPSS_p
+raw cases,-6.3322,0.0,0.1098,0.1
+log(cases+1),-3.1236,0.0249,0.3141,0.1
+"log, seasonal diff (D=1)",-4.2889,0.0005,0.0725,0.1
+"log, seasonal + regular diff (D=1, d=1)",-5.0193,0.0,0.0382,0.1

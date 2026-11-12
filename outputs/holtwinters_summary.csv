@@ -1,0 +1,4 @@
+,AIC,alpha (level),gamma (season),phi (damping)
+hw_add_log,-252.5779,1.0,0.0,
+hw_damped_log,-265.9759,1.0,0.0,0.8
+hw_mul_raw,3646.8909,0.9954,0.0046,

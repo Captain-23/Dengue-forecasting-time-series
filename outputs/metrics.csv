@@ -1,5 +1,5 @@
 model,RMSE,MAE,MAPE (%),RMSE gain vs seasonal naive (%)
-sarima,2086.586,932.83,35.106,13.582
+sarima,1363.153,588.054,19.81,43.544
 hw_add_log,2142.34,962.956,38.152,11.273
 seasonal_naive,2414.535,1136.042,32.465,0.0
 arima,2500.302,1196.419,34.063,-3.552

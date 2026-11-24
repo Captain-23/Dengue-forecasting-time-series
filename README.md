@@ -84,3 +84,17 @@ Run `python validation_blend.py` to search SARIMA weights from 0 to 1 in 0.05 in
 - The script asserts that the validation and test date sets do not overlap, and the test set is not read until after the weight search has selected and stored a weight.
 
 The validation search is reported in `outputs/blend_validation_curve.csv`. The chosen weight and the legacy 60/40 weight are compared once on the test set in `outputs/blend_test_comparison.csv`.
+
+## Expanding-window tuning for XGBoost and Prophet
+
+Run `python tune_ml_models.py` to tune the machine-learning models using the training period only.
+
+- Cross-validation: three expanding-window folds
+- Validation block: 12 months per fold
+- Folds: 2015–2016–2017 validation blocks after fitting on the preceding training history
+- XGBoost grid: depth 2–3, learning rate 0.03–0.05, 300–500 trees, and subsample 0.8–1.0
+- Prophet grid: changepoint prior 0.05–0.5 and seasonality prior 1–10
+- CV metric: RMSE on the original monthly case scale after log inversion
+- Final step: refit each winning model once on all 2001–2017 training data and evaluate once on 2018–2019
+
+CV rankings are saved in `outputs/xgboost_cv_results.csv` and `outputs/prophet_cv_results.csv`. Final test metrics and forecasts are saved in `outputs/ml_cv_test_results.csv` and `outputs/ml_cv_test_forecasts.csv`.

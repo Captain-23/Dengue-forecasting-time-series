@@ -1,0 +1,3 @@
+model,RMSE,MAE,MAPE (%),parameters
+xgboost,2854.187946830561,1600.2006516177753,70.89416689454667,"{'max_depth': 2, 'learning_rate': 0.03, 'n_estimators': 300, 'subsample': 1.0}"
+prophet,2052.996895064351,1277.6273073272218,58.5340335504953,"{'changepoint_prior_scale': 0.1, 'seasonality_prior_scale': 1.0}"

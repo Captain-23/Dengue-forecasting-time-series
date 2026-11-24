@@ -1,6 +1,6 @@
-# Phase 2: Classical forecasting of monthly dengue cases, Rio de Janeiro state
+# Phase 2: Classical and machine-learning forecasting of monthly dengue cases, Rio de Janeiro state
 
-Forecasts monthly dengue cases for the state of Rio de Janeiro with classical time-series models (naive baselines, ARIMA, SARIMA, Holt-Winters), then compares them with RMSE, MAE and MAPE on a 24-month hold-out (Jan 2018 to Dec 2019).
+Forecasts monthly dengue cases for the state of Rio de Janeiro with classical time-series models (naive baselines, ARIMA, SARIMA, Holt-Winters), XGBoost, and Prophet, then compares them with RMSE, MAE and MAPE on a 24-month hold-out (Jan 2018 to Dec 2019).
 
 ## Data
 

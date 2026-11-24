@@ -162,3 +162,45 @@ Plain-language implications:
 - February–March are the clearest early-rise months for the dengue surveillance calendar, so weekly or monthly refreshes are important.
 - XGBoost gain indicates that lagged cases, especially lag 1, dominate its prediction; recent case momentum matters more than the month indicator.
 - A 1-month lagged temperature term also ranks highly. This supports adding lagged weather to outbreak monitoring, but population and temperature should not be supplied from future test values in deployment.
+
+## Limitations and future work
+
+### Limitations
+
+- **Short historical sample:** the project has 228 monthly observations, of which 204 are used for the original training period. This is not enough to observe many unusual multi-year outbreak patterns or to establish stable estimates for rare serotype or immunity regimes.
+- **Underreporting and reporting delays:** surveillance counts may be incomplete, revised later, or reported before confirmation. The models treat reported counts as final observed values and do not model data-quality uncertainty.
+- **Spatial aggregation:** cases from 18 Rio de Janeiro micro-regions are summed into one series. Local outbreaks can cancel or be diluted, reducing usefulness for municipal or hospital planning.
+- **Structural change:** dengue serotype circulation, population immunity, vector control, and healthcare access may change over time. The 2019 outbreak may represent a structurally different regime rather than a predictable repetition of earlier seasons.
+- **MAPE instability:** MAPE divides by the observed count, so low months receive disproportionate weight and the metric becomes undefined near zero. It should not be interpreted as a single authoritative measure of forecast quality.
+- **Covariate availability:** precipitation, future population, policy, and vector-control variables may not be known for future periods. Covariates must be lagged or forecasted before use.
+- **Protocol differences:** fixed-origin and rolling forecasts answer different planning questions. Combining their rankings without identifying the protocol can be misleading.
+
+### Metric choice
+
+Run `python additional_metrics.py` to compute MAPE, seasonal MASE, and sMAPE for every saved test forecast. The seasonal-naive MASE denominator is the mean absolute 12-month seasonal difference in the training history.
+
+- MAPE is interpretable but unstable for low counts.
+- MASE compares mean absolute forecast error with a seasonal-naive benchmark and is less sensitive to the chosen case scale.
+- sMAPE uses both actual and predicted values in the denominator and is less dominated by individual near-zero observations.
+
+The current test metrics include:
+
+| Model | MAPE | MASE | sMAPE |
+|---|---:|---:|---:|
+| SARIMA | 19.81% | 0.0711 | 21.67% |
+| XGBoost | 73.48% | 0.1019 | 49.96% |
+| Holt-Winters additive | 38.15% | 0.1165 | 51.51% |
+| Seasonal naive | 32.46% | 0.1374 | 44.62% |
+
+These results support using more than MAPE: SARIMA is also strongest under seasonal MASE and sMAPE, while low-count sensitivity does not change the general conclusion.
+
+### Concrete future work
+
+1. Add precipitation, humidity, mosquito density, vector-control activity, and healthcare-access indicators, with only ex ante available values.
+2. Replace the state aggregate with a hierarchical model for all 18 micro-regions, sharing seasonal and climate parameters while preserving local outbreak signals.
+3. Use population denominators or dengue incidence rather than monthly case counts alone.
+4. Add nowcasting to model reporting delays and revisions; distinguish provisional from confirmed counts.
+5. Fit probabilistic forecasts and report 50%, 80%, and 95% prediction intervals rather than relying on point forecasts for hospital planning.
+6. Introduce outbreak-regime or changepoint models that treat serotype shifts and exceptional epidemic periods separately from ordinary seasonal cycles.
+7. Extend back-testing to additional years or states and add calibration checks for interval coverage.
+8. Include serotype, immunity, genomic, and vaccination data where available.

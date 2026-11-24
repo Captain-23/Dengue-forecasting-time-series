@@ -71,3 +71,16 @@ Run `python evaluation_protocols.py` to generate a consistent comparison for eve
 - All metrics are computed after applying `expm1(log1p(x))`, using RMSE, MAE, and MAPE on original monthly case counts.
 
 The numbers differ because the rolling protocol receives each new actual month and can correct drift or adjust for the 2019 outbreak, while the multi-step protocol accumulates forecast errors from one fixed origin. The multi-step result is fairer for honest 24-month planning or when no future observations will be available. The rolling result is fairer for operational monthly deployment, where the latest actual is available before producing the next month’s forecast.
+
+## SARIMA/seasonal-naive blend validation
+
+Run `python validation_blend.py` to search SARIMA weights from 0 to 1 in 0.05 increments.
+
+- Fit window: January 2001–December 2014
+- Validation window: January 2015–December 2017
+- Test window: January 2018–December 2019
+- Selection metric: MAPE
+- Validation forecasts are rolling one-step SARIMA forecasts, with each observed validation month appended before the next forecast.
+- The script asserts that the validation and test date sets do not overlap, and the test set is not read until after the weight search has selected and stored a weight.
+
+The validation search is reported in `outputs/blend_validation_curve.csv`. The chosen weight and the legacy 60/40 weight are compared once on the test set in `outputs/blend_test_comparison.csv`.

@@ -61,3 +61,13 @@ dengue_phase2/
 - **Differencing:** seasonal D = 1 (period 12) for SARIMA. Regular d = 1 for ARIMA and SARIMA.
 - **Model selection:** among candidates whose residuals pass the Ljung-Box test (lags 12 and 24, burn-in excluded), pick the lowest AIC. AIC is only compared within one differencing order.
 - **Evaluation:** RMSE, MAE and MAPE on the test window, all on the case-count scale. Each model is fitted once and forecasts the whole window, with no refitting.
+
+## Two-protocol evaluation
+
+Run `python evaluation_protocols.py` to generate a consistent comparison for every model.
+
+- **Multi-step:** fit once on the January 2001–December 2017 training set and forecast all 24 test months using only training data.
+- **One-step rolling:** refit at the start of each test month and append the actual observed value after each forecast.
+- All metrics are computed after applying `expm1(log1p(x))`, using RMSE, MAE, and MAPE on original monthly case counts.
+
+The numbers differ because the rolling protocol receives each new actual month and can correct drift or adjust for the 2019 outbreak, while the multi-step protocol accumulates forecast errors from one fixed origin. The multi-step result is fairer for honest 24-month planning or when no future observations will be available. The rolling result is fairer for operational monthly deployment, where the latest actual is available before producing the next month’s forecast.

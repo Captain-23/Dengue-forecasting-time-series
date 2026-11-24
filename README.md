@@ -143,3 +143,22 @@ Current comparison using the existing temperature proxy and population:
 |---|---:|---:|---:|
 | XGBoost without covariates | 2,854 | 1,600 | 70.89% |
 | XGBoost with population and mean temperature | 2,769 | 1,500 | 61.74% |
+
+## Test-period error analysis
+
+Run `python error_analysis.py` to produce:
+
+- `outputs/error_by_calendar_month.csv`
+- `outputs/error_by_year.csv`
+- `outputs/xgboost_feature_importance.csv`
+- `outputs/figures/09_error_actual_vs_sarima.png`
+
+The primary forecast is the rolling tuned SARIMA, selected because it has the lowest test RMSE and MAE. It underestimates the May 2019 peak of 10,022 cases by 2,877 cases. The largest monthly absolute errors occur in March–May 2019, while 2018 is substantially more accurate.
+
+Plain-language implications:
+
+- Hospital surge planning should not rely on a point forecast alone during March–May: the model can miss a rapidly rising outbreak.
+- An early-warning threshold may be reached when the forecast and the most recent observed month begin to rise together. Use a 2019-style sensitivity analysis rather than a fixed historical average.
+- February–March are the clearest early-rise months for the dengue surveillance calendar, so weekly or monthly refreshes are important.
+- XGBoost gain indicates that lagged cases, especially lag 1, dominate its prediction; recent case momentum matters more than the month indicator.
+- A 1-month lagged temperature term also ranks highly. This supports adding lagged weather to outbreak monitoring, but population and temperature should not be supplied from future test values in deployment.

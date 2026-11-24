@@ -1,0 +1,3 @@
+model,covariates,RMSE,MAE,MAPE (%)
+XGBoost without climate,lags 1-12 only,2854.187946830561,1600.2006516177753,70.89416689454667
+XGBoost with climate,"population, mean_temperature",2769.2041482275404,1500.3238075377494,61.74386603534746

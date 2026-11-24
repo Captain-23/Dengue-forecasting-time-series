@@ -98,3 +98,48 @@ Run `python tune_ml_models.py` to tune the machine-learning models using the tra
 - Final step: refit each winning model once on all 2001–2017 training data and evaluate once on 2018–2019
 
 CV rankings are saved in `outputs/xgboost_cv_results.csv` and `outputs/prophet_cv_results.csv`. Final test metrics and forecasts are saved in `outputs/ml_cv_test_results.csv` and `outputs/ml_cv_test_forecasts.csv`.
+
+## SARIMA/XGBoost ensemble
+
+Run `python build_ensemble.py` to generate validation-selected ensemble results.
+
+- Validation period: January 2015–December 2017
+- Test period: January 2018–December 2019
+- Weighted-average search: XGBoost weights from 0 to 1 in 0.05 increments
+- Selection metric: validation RMSE
+- Chosen weight: 15% tuned XGBoost / 85% rolling SARIMA
+- Stacking model: linear regression fitted on the two validation predictions
+- The test set is not accessed until both validation-selected choices are fixed
+
+The weighted average improves test MAPE from 25.86% for rolling SARIMA to 22.54%, although it does not improve SARIMA's lower test RMSE or MAE. Linear stacking overfits the 2015–2017 prediction relationship and does not improve the test metrics.
+
+## Monthly climate covariates
+
+Run `python climate_xgboost.py` to compare XGBoost with and without covariates.
+
+The existing raw file provides Rio de Janeiro `tmax` and `tmin`, from which the script constructs mean temperature. It does not provide precipitation. For temperature and precipitation, download Rio station or state observations from [INMET](https://portal.inmet.gov.br/) and state/municipal population series from [IBGE](https://www.ibge.gov.br/). The script currently uses the population column already present in the processed dengue data.
+
+Create a monthly climate CSV in this format:
+
+```text
+date,mean_temperature,total_precipitation
+2001-01-01,27.4,245.0
+2001-02-01,27.1,198.3
+```
+
+Then run:
+
+```bash
+python climate_xgboost.py --climate data/climate/rj_monthly.csv
+```
+
+The loader also accepts INMET-style `station_date` plus `mean_temperature`/`precipitation_mm`, or Portuguese `data` plus `temperatura_media`/`precipitacao` columns. Temperature is aggregated to a monthly mean and precipitation to a monthly sum. Population is taken from the processed monthly series.
+
+All covariates are shifted by 1, 2, and 3 months before training. The 2018–2019 comparison uses only covariate values available at each forecast origin: for missing future covariates, it applies a prior-year proxy for the lagged month. For operational deployment, current-month weather is not usable with lags 1–3 unless it is observed and treated as a known value. Population estimates or projections for future periods should use a year-ahead estimate or remain an unavailable covariate rather than using test-period population.
+
+Current comparison using the existing temperature proxy and population:
+
+| Model | RMSE | MAE | MAPE |
+|---|---:|---:|---:|
+| XGBoost without covariates | 2,854 | 1,600 | 70.89% |
+| XGBoost with population and mean temperature | 2,769 | 1,500 | 61.74% |
